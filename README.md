@@ -66,16 +66,14 @@ The `$NCI` token is a custom asset created on the Stellar blockchain and used wi
 cd vericert-backend
 ./gradlew bootRun
 
-💻 Frontend (React + Vite + TypeScript)
+### 💻 Frontend (React + Vite + TypeScript)
 bash
-Copy
-Edit
 cd vericert-frontend
 npm install
 npm run dev
 App runs at: http://localhost:5173
 
-🔑 Usage Flow
+### 🔑 Usage Flow
 Admin logs in to input student details.
 
 Diploma metadata (JSON) is generated.
