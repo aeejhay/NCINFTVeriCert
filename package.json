@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@stellar/stellar-sdk": "^13.3.0",
+    "react-bootstrap-accordion": "^1.0.0",
+    "swiper": "^11.2.8"
+  }
+}
