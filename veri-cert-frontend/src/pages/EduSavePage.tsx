@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import edusaveImg from '../assets/images/edusave.jpg';
 
 interface FAQItem {
   question: string;
@@ -39,12 +41,18 @@ const EduSavePage: React.FC = () => {
             Invest in education with blockchain-powered savings
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="px-8 py-3 bg-green-500 text-white rounded-full font-semibold hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl">
+            <Link
+              to="/buy-nci-token"
+              className="px-8 py-3 bg-green-500 text-white rounded-full font-semibold hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl text-center"
+            >
               Buy $NCI Token
-            </button>
-            <button className="px-8 py-3 bg-white text-blue-600 rounded-full font-semibold hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl">
+            </Link>
+            <Link
+              to="/get-wallet"
+              className="px-8 py-3 bg-white text-blue-600 rounded-full font-semibold hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl text-center"
+            >
               Get a Wallet
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -83,6 +91,9 @@ const EduSavePage: React.FC = () => {
               <h3 className="text-xl font-semibold mb-2">Education Focused</h3>
               <p className="text-gray-600">Specifically designed for educational savings at NCI.</p>
             </div>
+          </div>
+          <div className="flex justify-center mt-12">
+            <img src={edusaveImg} alt="NCI EduSave" className="rounded-xl shadow-lg w-full h-[600px]" />
           </div>
         </div>
       </section>

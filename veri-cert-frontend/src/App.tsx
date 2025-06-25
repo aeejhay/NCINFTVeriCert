@@ -12,6 +12,8 @@ import LoginPage from './pages/LoginPage';
 import AboutUs from './pages/AboutUs';
 import EduSavePage from './pages/EduSavePage';
 import SendTokenPage from './pages/SendTokenPage';
+import GetWallet from './pages/GetWallet';
+import BuyNCIToken from './pages/BuyNCIToken';
 import "./App.css";
 
 const App: React.FC = () => {
@@ -30,6 +32,8 @@ const App: React.FC = () => {
             <Route path="/about" element={<AboutUs />} />
             <Route path="/edusave" element={<EduSavePage />} />
             <Route path="/send-token" element={<SendTokenPage />} />
+            <Route path="/get-wallet" element={<GetWallet />} />
+            <Route path="/buy-nci-token" element={<BuyNCIToken />} />
             <Route path="/" element={<Home />} />
           </Routes>
         </main>
