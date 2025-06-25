@@ -34,13 +34,33 @@ function AdminForm() {
     certificate: any;
   } | null>(null);
 
+  const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    // Clear error for this field as user types
+    setValidationErrors(errors => ({ ...errors, [e.target.name]: '' }));
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     alert('Copied to clipboard!');
+  };
+
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    Object.entries(form).forEach(([key, value]) => {
+      if (!value || value.trim() === '') {
+        errors[key] = 'This field is required.';
+      } else if (key === 'dateIssued') {
+        // Optionally, check for valid date
+        if (isNaN(Date.parse(value))) {
+          errors[key] = 'Please enter a valid date.';
+        }
+      }
+    });
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const mintCertificate = async (memoHashHex: string) => {
@@ -99,6 +119,15 @@ function AdminForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) {
+      // Optionally scroll to first error
+      const firstErrorField = Object.keys(validationErrors)[0];
+      if (firstErrorField) {
+        const el = document.getElementsByName(firstErrorField)[0];
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
     try {
       const certJson = { ...form };
       // Hash the JSON (SHA-256, hex)
@@ -179,7 +208,7 @@ function AdminForm() {
   return (
     <div className="max-w-4xl mx-auto">
       <h2 className="text-center text-3xl font-semibold text-gray-900 mb-8">Start Minting Certificate to Stellar</h2>
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded shadow mt-8">
+      <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded shadow mt-8" noValidate>
         <h2 className="text-xl font-bold mb-4">Admin: Issue Certificate</h2>
         {Object.entries(form).map(([key, value]) => (
           <div className="mb-4" key={key}>
@@ -187,17 +216,24 @@ function AdminForm() {
             <input
               type={key === 'dateIssued' ? 'date' : 'text'}
               name={key}
-              className="w-full border rounded px-3 py-2 text-white bg-gray-700 placeholder-gray-400"
+              className={`w-full border rounded px-3 py-2 text-white bg-gray-700 placeholder-gray-400 ${validationErrors[key] ? 'border-red-500' : ''}`}
               value={value}
               onChange={handleChange}
               required
             />
+            {validationErrors[key] && (
+              <div className="text-red-500 text-sm mt-1">{validationErrors[key]}</div>
+            )}
           </div>
         ))}
         <button 
           type="submit" 
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-blue-300"
-          disabled={isMinting}
+          disabled={
+            isMinting ||
+            Object.values(form).some(v => !v) ||
+            Object.values(validationErrors).some(error => error)
+          }
         >
           {isMinting ? 'Minting...' : 'Submit'}
         </button>
