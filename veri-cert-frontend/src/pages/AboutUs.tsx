@@ -1,3 +1,5 @@
+// About Us Page
+
 import React from 'react';
 import aboutUsImg from '../assets/images/about-us-img.png';
 

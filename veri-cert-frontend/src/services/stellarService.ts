@@ -1,3 +1,4 @@
+// Stellar Service all connections to the Ledger and Token Details
 import { Networks, TransactionBuilder, Operation, Asset, Keypair, Horizon, Memo } from '@stellar/stellar-sdk';
 
 // Initialize Stellar server (using mainnet)

@@ -1,3 +1,5 @@
+// Connect Account or Connect Wallet
+
 import React, { useState } from 'react';
 import { stellarService } from '../services/stellarService';
 

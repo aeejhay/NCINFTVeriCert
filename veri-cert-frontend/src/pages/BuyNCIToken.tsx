@@ -1,3 +1,5 @@
+// Buy NCI Token Page
+
 import React from 'react';
 
 const BuyNCIToken: React.FC = () => {
