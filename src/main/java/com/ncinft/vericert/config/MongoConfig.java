@@ -28,6 +28,12 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
         System.out.println("Database Name: " + getDatabaseName());
         System.out.println("============================");
         
-        return MongoClients.create(mongoUri);
+        try {
+            return MongoClients.create(mongoUri);
+        } catch (Exception e) {
+            System.err.println("Error creating MongoDB client: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 } 
