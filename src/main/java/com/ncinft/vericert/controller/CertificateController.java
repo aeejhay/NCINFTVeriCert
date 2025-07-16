@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/certificates")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000", "https://ncinft-veri-cert.vercel.app"})
 public class CertificateController {
 
     @Autowired
