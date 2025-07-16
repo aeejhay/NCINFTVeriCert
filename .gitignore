@@ -43,6 +43,10 @@ yarn-error.log
 .env.test.local
 .env.production.local
 
+### Spring Boot ###
+application-local.properties
+application-prod.properties
+
 ### Build ###
 /dist
 /build
