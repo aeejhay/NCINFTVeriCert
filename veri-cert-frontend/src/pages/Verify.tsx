@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Networks, Horizon, Memo, xdr } from '@stellar/stellar-sdk';
+import { Horizon } from '@stellar/stellar-sdk';
 import { API_ENDPOINTS } from '../config/api';
 
 interface VerificationResult {

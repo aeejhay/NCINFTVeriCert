@@ -140,7 +140,6 @@ class StellarService {
   ): Promise<boolean> {
     try {
       const assetCode = `CERT-${certificateId}`;
-      const asset = new Asset(assetCode, issuerPublicKey);
 
       // Check if the student holds the certificate
       const account = await server.loadAccount(studentPublicKey);
