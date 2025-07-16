@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Networks, Horizon, Memo, xdr } from '@stellar/stellar-sdk';
+import { API_ENDPOINTS } from '../config/api';
 
 interface VerificationResult {
   isValid: boolean;
@@ -68,7 +69,7 @@ const Verify: React.FC = () => {
 
       // Verify certificate in our database
       console.log('Verifying certificate with memo hash:', memoHash);
-      const response = await fetch(`http://localhost:8080/api/certificates/verify/${memoHash}`);
+      const response = await fetch(API_ENDPOINTS.VERIFY_CERTIFICATE(memoHash));
       
       if (!response.ok) {
         const errorText = await response.text();

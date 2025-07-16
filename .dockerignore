@@ -1,0 +1,6 @@
+target/
+tmp/
+veri-cert-frontend/
+.git/
+.gitignore
+README.md 

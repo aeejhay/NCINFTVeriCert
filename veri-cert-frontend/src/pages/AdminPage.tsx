@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Networks, TransactionBuilder, Operation, Asset, Keypair, Horizon, Memo } from '@stellar/stellar-sdk';
+import { API_ENDPOINTS } from '../config/api';
 
 function AdminForm() {
   const navigate = useNavigate();
@@ -148,7 +149,7 @@ function AdminForm() {
       // Send certificate data to backend
       try {
         console.log('Sending certificate data to backend...');
-        const response = await fetch('http://localhost:8080/api/certificates', {
+        const response = await fetch(API_ENDPOINTS.CERTIFICATES, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

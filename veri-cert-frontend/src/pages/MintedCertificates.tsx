@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 interface MintedCertificate {
   certificateId: string;
@@ -26,7 +27,7 @@ const MintedCertificates: React.FC = () => {
         setError(null);
 
         // Fetch certificates from MongoDB
-        const response = await axios.get('http://localhost:8080/api/certificates');
+        const response = await axios.get(API_ENDPOINTS.CERTIFICATES);
         console.log('Fetched certificates from MongoDB:', response.data);
         setCertificates(response.data);
       } catch (err) {

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 import axios from 'axios';
 import { Networks, TransactionBuilder, Operation, Asset, Memo, Keypair, Horizon } from 'stellar-sdk';
+import { API_ENDPOINTS } from '../config/api';
 
 interface TokenTransaction {
   recipientAddress: string;
@@ -163,7 +164,7 @@ const SendTokenPage: React.FC = () => {
 
       console.log('Saving transaction to MongoDB...');
       try {
-        await axios.post('http://localhost:8080/api/ncitoken', transactionData);
+        await axios.post(API_ENDPOINTS.NCI_TOKEN, transactionData);
         console.log('Transaction saved to MongoDB');
 
         // Set success details
