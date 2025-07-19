@@ -59,4 +59,14 @@ public class CertificateServiceImpl implements CertificateService {
     public List<Certificate> findAll() {
         return certificateRepository.findAll();
     }
+
+    @Override
+    public Certificate findById(String id) {
+        return certificateRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Certificate> searchByStudentName(String query) {
+        return certificateRepository.findByStudentNameContainingIgnoreCase(query);
+    }
 } 

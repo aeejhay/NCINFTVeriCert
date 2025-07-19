@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Networks, TransactionBuilder, Operation, Asset, Keypair, Horizon, Memo } from '@stellar/stellar-sdk';
 import { API_ENDPOINTS } from '../config/api';
+import NotificationModal from '../components/NotificationModal';
 
 function AdminForm() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ function AdminForm() {
   } | null>(null);
 
   const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -211,6 +213,9 @@ function AdminForm() {
   return (
     <div className="max-w-4xl mx-auto">
       <h2 className="text-center text-3xl font-semibold text-gray-900 mb-8">Start Minting Certificate to Stellar</h2>
+      
+      {/* Admin Actions */}
+      
       <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded shadow mt-8" noValidate>
         <h2 className="text-xl font-bold mb-4">Admin: Issue Certificate</h2>
         {Object.entries(form).map(([key, value]) => (
@@ -312,7 +317,14 @@ function AdminForm() {
           </div>
         </div>
       )}
-
+      <div className="flex justify-center mt-8 space-x-4">
+        <button
+          onClick={() => setShowNotificationModal(true)}
+          className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+        >
+          📧 Notify Student
+        </button>
+      </div>
       <div className="mt-8 text-center">
         <button
           onClick={handleLogout}
@@ -321,6 +333,12 @@ function AdminForm() {
           Logout
         </button>
       </div>
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={showNotificationModal}
+        onClose={() => setShowNotificationModal(false)}
+      />
     </div>
   );
 }

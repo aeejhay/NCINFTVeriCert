@@ -6,4 +6,6 @@ export const API_ENDPOINTS = {
   CERTIFICATES: `${API_BASE_URL}/api/certificates`,
   VERIFY_CERTIFICATE: (memoHash: string) => `${API_BASE_URL}/api/certificates/verify/${memoHash}`,
   NCI_TOKEN: `${API_BASE_URL}/api/ncitoken`,
+  SEARCH_STUDENTS: `${API_BASE_URL}/api/notifications/search-students`,
+  SEND_NOTIFICATION: `${API_BASE_URL}/api/notifications/send-notification`,
 }; 
