@@ -21,7 +21,6 @@ const NotifyStudent: React.FC = () => {
   const [email, setEmail] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [message, setMessage] = useState('');
 
   const searchStudents = async () => {
     if (!searchQuery.trim()) {

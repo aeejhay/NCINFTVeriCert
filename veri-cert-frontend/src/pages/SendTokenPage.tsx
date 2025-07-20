@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Toaster, toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { Networks, TransactionBuilder, Operation, Asset, Memo, Keypair, Horizon } from 'stellar-sdk';
 import { API_ENDPOINTS } from '../config/api';
