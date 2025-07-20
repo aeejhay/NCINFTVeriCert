@@ -14,6 +14,8 @@ import EduSavePage from './pages/EduSavePage';
 import SendTokenPage from './pages/SendTokenPage';
 import GetWallet from './pages/GetWallet';
 import BuyNCIToken from './pages/BuyNCIToken';
+import AdminLayout from './components/AdminLayout';
+import NotifyStudent from './pages/NotifyStudent';
 import "./App.css";
 
 const App: React.FC = () => {
@@ -23,18 +25,24 @@ const App: React.FC = () => {
         <Header />
         <main className="flex-grow w-full">
           <Routes>
+            {/* Public Routes */}
             <Route path="/home" element={<Home />} />
             <Route path="/connect" element={<ConnectAccount />} />
             <Route path="/minted" element={<MintedCertificates />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/admin" element={<AdminPage />} />
             <Route path="/verify" element={<Verify />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/edusave" element={<EduSavePage />} />
-            <Route path="/send-token" element={<SendTokenPage />} />
             <Route path="/get-wallet" element={<GetWallet />} />
             <Route path="/buy-nci-token" element={<BuyNCIToken />} />
             <Route path="/" element={<Home />} />
+            
+            {/* Admin Routes with Layout */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="mint" element={<AdminPage />} />
+              <Route path="send-token" element={<SendTokenPage />} />
+              <Route path="notify" element={<NotifyStudent />} />
+            </Route>
           </Routes>
         </main>
         <Footer />

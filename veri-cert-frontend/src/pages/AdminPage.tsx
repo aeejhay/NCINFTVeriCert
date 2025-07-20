@@ -1,25 +1,11 @@
 //Admin Page
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import { Networks, TransactionBuilder, Operation, Asset, Keypair, Horizon, Memo } from '@stellar/stellar-sdk';
 import { API_ENDPOINTS } from '../config/api';
-import NotificationModal from '../components/NotificationModal';
+import { toast } from 'react-hot-toast';
 
 function AdminForm() {
-  const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    // Check if user is authenticated
-    const auth = localStorage.getItem('isAdminAuthenticated');
-    if (!auth) {
-      navigate('/login');
-    } else {
-      setIsAuthenticated(true);
-    }
-  }, [navigate]);
-
   const [form, setForm] = useState({
     certificateId: '',
     studentName: '',
@@ -39,7 +25,6 @@ function AdminForm() {
   } | null>(null);
 
   const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
-  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -49,7 +34,7 @@ function AdminForm() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert('Copied to clipboard!');
+    toast.success('Copied to clipboard!');
   };
 
   const validateForm = () => {
@@ -99,256 +84,354 @@ function AdminForm() {
           amount: "1"
         }))
         .addMemo(Memo.hash(memoHashHex))
-        .setTimeout(0)
+        .setTimeout(30)
         .build();
 
-      // Sign transaction
+      // Sign the transaction
       setMintStatus('Signing transaction...');
-      const keypair = Keypair.fromSecret(import.meta.env.VITE_STELLAR_ISSUER_SECRET || '');
-      transaction.sign(keypair);
+      const issuerSecret = import.meta.env.VITE_STELLAR_ISSUER_SECRET;
+      if (!issuerSecret) {
+        throw new Error('Issuer secret not found in environment variables');
+      }
+      const issuerKeypair = Keypair.fromSecret(issuerSecret);
+      transaction.sign(issuerKeypair);
 
-      // Submit transaction
+      // Submit the transaction
       setMintStatus('Submitting transaction...');
       const result = await server.submitTransaction(transaction);
-      setMintStatus('Certificate minted successfully!');
-      console.log('Transaction successful:', result.hash);
-      return result.hash;
-    } catch (error) {
-      console.error('Transaction failed:', error);
-      setMintStatus('Error: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      const txHash = result.hash;
+      setMintStatus('Transaction successful!');
+
+      return txHash;
+    } catch (error: any) {
+      console.error('Minting error:', error);
+      if (error.response) {
+        throw new Error(`Stellar error: ${error.response.extras?.result_codes?.operations?.join(', ')}`);
+      }
       throw error;
-    } finally {
-      setIsMinting(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!validateForm()) {
-      // Optionally scroll to first error
-      const firstErrorField = Object.keys(validationErrors)[0];
-      if (firstErrorField) {
-        const el = document.getElementsByName(firstErrorField)[0];
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      toast.error('Please fill in all required fields correctly.');
       return;
     }
+
     try {
-      const certJson = { ...form };
-      // Hash the JSON (SHA-256, hex)
+      setIsMinting(true);
+      setMintStatus('Validating form...');
+
+      // Create certificate data
+      const certificateData = {
+        certificateId: form.certificateId,
+        studentName: form.studentName,
+        degree: form.degree,
+        grade: form.grade,
+        qqiLevel: form.qqiLevel,
+        dateIssued: form.dateIssued,
+        signedBy: form.signedBy,
+        institution: form.institution,
+      };
+
+      // Create hash for memo
+      const certificateString = JSON.stringify(certificateData);
       const encoder = new TextEncoder();
-      const data = encoder.encode(JSON.stringify(certJson));
-      const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+      const data = encoder.encode(certificateString);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      
-      console.log('Certificate JSON:', certJson);
-      console.log('Certificate Hash (hex):', hash);
+      const memoHashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-      // Mint the certificate on Stellar
-      const txHash = await mintCertificate(hash);
+      setMintStatus('Minting certificate on blockchain...');
+      const txHash = await mintCertificate(memoHashHex);
 
-      // Send certificate data to backend
-      try {
-        console.log('Sending certificate data to backend...');
-        const response = await fetch(API_ENDPOINTS.CERTIFICATES, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            certificateId: certJson.certificateId,
-            studentName: certJson.studentName,
-            degree: certJson.degree,
-            grade: certJson.grade,
-            qqiLevel: certJson.qqiLevel,
-            dateIssued: new Date(certJson.dateIssued).toISOString().split('T')[0],
-            signedBy: certJson.signedBy,
-            institution: certJson.institution,
-            memoHashHex: hash,
-            transactionId: txHash
-          })
-        });
+      // Save to database
+      setMintStatus('Saving to database...');
+      const response = await fetch(API_ENDPOINTS.CERTIFICATES, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...certificateData,
+          txHash: txHash,
+          memoHash: memoHashHex
+        })
+      });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Backend response:', {
-            status: response.status,
-            statusText: response.statusText,
-            error: errorText
-          });
-          throw new Error(`Failed to store certificate in database: ${errorText}`);
-        }
-
-        const savedCertificate = await response.json();
-        console.log('Certificate stored:', savedCertificate);
-        setMintStatus('Certificate minted and stored successfully!');
-        setSuccessDetails({
-          txHash,
-          certificate: savedCertificate
-        });
-      } catch (error) {
-        console.error('Backend error details:', error);
-        if (error instanceof TypeError && error.message === 'Failed to fetch') {
-          setMintStatus('Error: Cannot connect to backend server. Please make sure the Spring Boot application is running on port 8080.');
-        } else {
-          setMintStatus('Error storing in database: ' + (error instanceof Error ? error.message : 'Unknown error'));
-        }
+      if (!response.ok) {
+        throw new Error(`Failed to save certificate: ${response.statusText}`);
       }
-    } catch (error) {
+
+      const savedCertificate = await response.json();
+
+      setSuccessDetails({
+        txHash: txHash,
+        certificate: savedCertificate
+      });
+
+      // Reset form
+      setForm({
+        certificateId: '',
+        studentName: '',
+        degree: '',
+        grade: '',
+        qqiLevel: '',
+        dateIssued: '',
+        signedBy: '',
+        institution: '',
+      });
+
+      toast.success('Certificate minted successfully!');
+      setMintStatus('');
+
+    } catch (error: any) {
       console.error('Error:', error);
-      setMintStatus('Error: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      toast.error(`Error: ${error.message}`);
+      setMintStatus('');
+    } finally {
+      setIsMinting(false);
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAdminAuthenticated');
-    navigate('/login');
-  };
-
-  if (!isAuthenticated) {
-    return null; // or a loading spinner
+  if (isMinting) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">{mintStatus}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h2 className="text-center text-3xl font-semibold text-gray-900 mb-8">Start Minting Certificate to Stellar</h2>
-      
-      {/* Admin Actions */}
-      
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded shadow mt-8" noValidate>
-        <h2 className="text-xl font-bold mb-4">Admin: Issue Certificate</h2>
-        {Object.entries(form).map(([key, value]) => (
-          <div className="mb-4" key={key}>
-            <label className="block mb-1 font-medium capitalize">{key.replace(/([A-Z])/g, ' $1')}</label>
-            <input
-              type={key === 'dateIssued' ? 'date' : 'text'}
-              name={key}
-              className={`w-full border rounded px-3 py-2 text-white bg-gray-700 placeholder-gray-400 ${validationErrors[key] ? 'border-red-500' : ''}`}
-              value={value}
-              onChange={handleChange}
-              required
-            />
-            {validationErrors[key] && (
-              <div className="text-red-500 text-sm mt-1">{validationErrors[key]}</div>
-            )}
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Mint Certificate</h2>
+          <p className="text-gray-600">
+            Create and mint a new academic certificate on the blockchain.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="certificateId" className="block text-sm font-medium text-gray-700 mb-2">
+                Certificate ID *
+              </label>
+              <input
+                type="text"
+                id="certificateId"
+                name="certificateId"
+                value={form.certificateId}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  validationErrors.certificateId ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter certificate ID"
+              />
+              {validationErrors.certificateId && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.certificateId}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="studentName" className="block text-sm font-medium text-gray-700 mb-2">
+                Student Name *
+              </label>
+              <input
+                type="text"
+                id="studentName"
+                name="studentName"
+                value={form.studentName}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  validationErrors.studentName ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter student name"
+              />
+              {validationErrors.studentName && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.studentName}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="degree" className="block text-sm font-medium text-gray-700 mb-2">
+                Degree *
+              </label>
+              <input
+                type="text"
+                id="degree"
+                name="degree"
+                value={form.degree}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  validationErrors.degree ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter degree"
+              />
+              {validationErrors.degree && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.degree}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="grade" className="block text-sm font-medium text-gray-700 mb-2">
+                Grade *
+              </label>
+              <input
+                type="text"
+                id="grade"
+                name="grade"
+                value={form.grade}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  validationErrors.grade ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter grade"
+              />
+              {validationErrors.grade && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.grade}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="qqiLevel" className="block text-sm font-medium text-gray-700 mb-2">
+                QQI Level *
+              </label>
+              <input
+                type="text"
+                id="qqiLevel"
+                name="qqiLevel"
+                value={form.qqiLevel}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  validationErrors.qqiLevel ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter QQI level"
+              />
+              {validationErrors.qqiLevel && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.qqiLevel}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="dateIssued" className="block text-sm font-medium text-gray-700 mb-2">
+                Date Issued *
+              </label>
+              <input
+                type="date"
+                id="dateIssued"
+                name="dateIssued"
+                value={form.dateIssued}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  validationErrors.dateIssued ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {validationErrors.dateIssued && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.dateIssued}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="signedBy" className="block text-sm font-medium text-gray-700 mb-2">
+                Signed By *
+              </label>
+              <input
+                type="text"
+                id="signedBy"
+                name="signedBy"
+                value={form.signedBy}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  validationErrors.signedBy ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter signer name"
+              />
+              {validationErrors.signedBy && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.signedBy}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="institution" className="block text-sm font-medium text-gray-700 mb-2">
+                Institution *
+              </label>
+              <input
+                type="text"
+                id="institution"
+                name="institution"
+                value={form.institution}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  validationErrors.institution ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter institution name"
+              />
+              {validationErrors.institution && (
+                <p className="mt-1 text-sm text-red-600">{validationErrors.institution}</p>
+              )}
+            </div>
           </div>
-        ))}
-        <button 
-          type="submit" 
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-blue-300"
-          disabled={
-            isMinting ||
-            Object.values(form).some(v => !v) ||
-            Object.values(validationErrors).some(error => error)
-          }
-        >
-          {isMinting ? 'Minting...' : 'Submit'}
-        </button>
-        {mintStatus && (
-          <div className={`mt-4 p-2 rounded ${mintStatus.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
-            {mintStatus}
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={isMinting}
+              className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              {isMinting ? 'Minting...' : 'Mint Certificate'}
+            </button>
+          </div>
+        </form>
+
+        {successDetails && (
+          <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-lg">
+            <h3 className="text-lg font-semibold text-green-800 mb-4">Certificate Minted Successfully!</h3>
+            <div className="space-y-4">
+              <div>
+                <span className="font-medium text-green-700">Transaction Hash:</span>
+                <div className="flex items-center gap-2 mt-1">
+                  <code className="flex-1 bg-white p-2 rounded border text-sm break-all">
+                    {successDetails.txHash}
+                  </code>
+                  <button
+                    onClick={() => copyToClipboard(successDetails.txHash)}
+                    className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="font-medium text-green-700">Student:</span> {successDetails.certificate.studentName}
+                </div>
+                <div>
+                  <span className="font-medium text-green-700">Certificate ID:</span> {successDetails.certificate.certificateId}
+                </div>
+                <div>
+                  <span className="font-medium text-green-700">Degree:</span> {successDetails.certificate.degree}
+                </div>
+                <div>
+                  <span className="font-medium text-green-700">Date Issued:</span> {successDetails.certificate.dateIssued}
+                </div>
+              </div>
+            </div>
           </div>
         )}
-      </form>
-
-      {successDetails && (
-        <div className="mt-8 bg-white p-6 rounded shadow">
-          <h3 className="text-xl font-bold mb-4">Certificate Issued Successfully</h3>
-          
-          <div className="mb-6">
-            <h4 className="font-semibold mb-2">Transaction Details</h4>
-            <div className="flex items-center gap-2">
-              <code className="bg-gray-100 p-2 rounded flex-1 overflow-x-auto">
-                {successDetails.txHash}
-              </code>
-              <button
-                onClick={() => copyToClipboard(successDetails.txHash)}
-                className="bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded"
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h4 className="font-semibold mb-2">Certificate Details</h4>
-              <dl className="space-y-2">
-                <div>
-                  <dt className="text-gray-600">Certificate ID</dt>
-                  <dd>{successDetails.certificate.certificateId}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-600">Student Name</dt>
-                  <dd>{successDetails.certificate.studentName}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-600">Degree</dt>
-                  <dd>{successDetails.certificate.degree}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-600">Grade</dt>
-                  <dd>{successDetails.certificate.grade}</dd>
-                </div>
-              </dl>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">&nbsp;</h4>
-              <dl className="space-y-2">
-                <div>
-                  <dt className="text-gray-600">QQI Level</dt>
-                  <dd>{successDetails.certificate.qqiLevel}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-600">Date Issued</dt>
-                  <dd>{successDetails.certificate.dateIssued}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-600">Signed By</dt>
-                  <dd>{successDetails.certificate.signedBy}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-600">Institution</dt>
-                  <dd>{successDetails.certificate.institution}</dd>
-                </div>
-              </dl>
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="flex justify-center mt-8 space-x-4">
-        <button
-          onClick={() => setShowNotificationModal(true)}
-          className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
-        >
-          📧 Notify Student
-        </button>
       </div>
-      <div className="mt-8 text-center">
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition-colors"
-        >
-          Logout
-        </button>
-      </div>
-
-      {/* Notification Modal */}
-      <NotificationModal
-        isOpen={showNotificationModal}
-        onClose={() => setShowNotificationModal(false)}
-      />
     </div>
   );
 }
 
 const AdminPage: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-gray-50 py-10">
-      <AdminForm />
-    </div>
-  );
+  return <AdminForm />;
 };
 
 export default AdminPage; 

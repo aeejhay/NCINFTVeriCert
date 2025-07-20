@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import axios from 'axios';
 import { Networks, TransactionBuilder, Operation, Asset, Memo, Keypair, Horizon } from 'stellar-sdk';
@@ -14,10 +13,7 @@ interface TokenTransaction {
 }
 
 const SendTokenPage: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState({
     recipientAddress: '',
     memo: '',
@@ -31,22 +27,6 @@ const SendTokenPage: React.FC = () => {
     memo: string;
     timestamp: Date;
   } | null>(null);
-
-  useEffect(() => {
-    // Check if user is admin using localStorage
-    const auth = localStorage.getItem('isAdminAuthenticated');
-    if (!auth) {
-      navigate('/login', { 
-        state: { 
-          from: location.pathname,
-          message: 'Please log in as admin to send tokens'
-        }
-      });
-    } else {
-      setIsAdmin(true);
-      setIsLoading(false);
-    }
-  }, [navigate, location]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -211,91 +191,72 @@ const SendTokenPage: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">Redirecting to login...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Toaster position="top-right" />
-      <div className="max-w-4xl mx-auto">
-        <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            Send NCI Token
-          </h2>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="recipientAddress" className="block text-sm font-medium text-gray-700 mb-2">
-                Recipient Stellar Address
-              </label>
-              <input
-                type="text"
-                id="recipientAddress"
-                name="recipientAddress"
-                value={formData.recipientAddress}
-                onChange={handleInputChange}
-                required
-                className="mt-1 block w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                placeholder="G..."
-              />
-            </div>
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Send NCI Token</h2>
+          <p className="text-gray-600">
+            Send NCI tokens to a recipient's Stellar address.
+          </p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="recipientAddress" className="block text-sm font-medium text-gray-700 mb-2">
+              Recipient Stellar Address
+            </label>
+            <input
+              type="text"
+              id="recipientAddress"
+              name="recipientAddress"
+              value={formData.recipientAddress}
+              onChange={handleInputChange}
+              required
+              className="mt-1 block w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+              placeholder="G..."
+            />
+          </div>
 
-            <div>
-              <label htmlFor="memo" className="block text-sm font-medium text-gray-700 mb-2">
-                Memo Text
-              </label>
-              <input
-                type="text"
-                id="memo"
-                name="memo"
-                value={formData.memo}
-                onChange={handleInputChange}
-                required
-                className="mt-1 block w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                placeholder="Enter memo text"
-              />
-            </div>
+          <div>
+            <label htmlFor="memo" className="block text-sm font-medium text-gray-700 mb-2">
+              Memo Text
+            </label>
+            <input
+              type="text"
+              id="memo"
+              name="memo"
+              value={formData.memo}
+              onChange={handleInputChange}
+              required
+              className="mt-1 block w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+              placeholder="Enter memo text"
+            />
+          </div>
 
-            <div>
-              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
-                Token Amount
-              </label>
-              <input
-                type="number"
-                id="amount"
-                name="amount"
-                value={formData.amount}
-                onChange={handleInputChange}
-                required
-                min="0"
-                step="0.0000001"
-                className="mt-1 block w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                placeholder="Enter amount"
-              />
-            </div>
+          <div>
+            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
+              Token Amount
+            </label>
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              value={formData.amount}
+              onChange={handleInputChange}
+              required
+              min="0"
+              step="0.0000001"
+              className="mt-1 block w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
+              placeholder="Enter amount"
+            />
+          </div>
 
+          <div className="flex justify-end">
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
+              className={`px-8 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
                 ${isLoading 
                   ? 'bg-blue-400 cursor-not-allowed' 
                   : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
@@ -303,11 +264,11 @@ const SendTokenPage: React.FC = () => {
             >
               {isLoading ? 'Sending...' : 'Send Token'}
             </button>
-          </form>
-        </div>
+          </div>
+        </form>
 
         {successDetails && (
-          <div className="bg-white rounded-lg shadow-lg p-8 transform transition-all duration-500 ease-in-out">
+          <div className="mt-8 bg-white rounded-lg shadow-lg p-8 transform transition-all duration-500 ease-in-out">
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-gray-900">Token Sent Successfully</h3>
               <p className="text-gray-600 mt-2">Transaction completed at {successDetails.timestamp.toLocaleString()}</p>
