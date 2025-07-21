@@ -26,7 +26,7 @@ public class EmailService {
                 "- Certificate ID: %s\n" +
                 "- Degree: %s\n" +
                 "- Date Issued: %s\n\n" +
-                "You can verify your certificate at: https://ncinft-veri-cert.vercel.app\n\n" +
+                "You can verify your certificate at: https://ncinft-veri-cert.vercel.app/verify\n\n" +
                 "Best regards,\n" +
                 "NCI VeriCert Team",
                 studentName, certificateId, degree, dateIssued
@@ -64,7 +64,7 @@ public class EmailService {
                 "• Transaction ID: %s\n" +
                 "• Memo Hash: %s\n\n" +
                 "🔍 HOW TO VERIFY YOUR CERTIFICATE:\n" +
-                "1. Visit: https://ncinft-veri-cert.vercel.app\n" +
+                "1. Visit: https://ncinft-veri-cert.vercel.app/verify\n" +
                 "2. Enter your Transaction ID: %s\n" +
                 "3. Your certificate details will be displayed for verification\n\n" +
                 "📱 FORWARDING YOUR CERTIFICATE:\n" +
