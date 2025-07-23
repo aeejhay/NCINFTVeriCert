@@ -156,8 +156,8 @@ function AdminForm() {
         },
         body: JSON.stringify({
           ...certificateData,
-          txHash: txHash,
-          memoHash: memoHashHex
+          transactionId: txHash,
+          memoHashHex: memoHashHex
         })
       });
 
