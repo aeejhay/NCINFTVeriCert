@@ -11,8 +11,8 @@ interface MintedCertificate {
   dateIssued: string;
   signedBy: string;
   institution: string;
-  memoHashHex: string;
-  transactionId: string;
+  memoHash: string;      // updated field
+  txHash: string;        // updated field
 }
 
 const MintedCertificates: React.FC = () => {
@@ -106,17 +106,17 @@ const MintedCertificates: React.FC = () => {
                   <div>
                     <dt className="text-sm font-medium text-gray-500 mb-2">Memo Hash</dt>
                     <code className="block text-sm font-mono bg-gray-100 p-3 rounded overflow-x-auto">
-                      {cert.memoHashHex}
+                      {cert.memoHash}
                     </code>
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500 mb-2">Transaction ID</dt>
                     <div className="flex items-center gap-2">
                       <code className="block text-sm font-mono bg-gray-100 p-3 rounded flex-1 overflow-x-auto">
-                        {cert.transactionId}
+                        {cert.txHash}
                       </code>
                       <a
-                        href={`https://stellar.expert/explorer/public/tx/${cert.transactionId}`}
+                        href={`https://stellar.expert/explorer/public/tx/${cert.txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800 p-2"
