@@ -17,9 +17,7 @@ public class Certificate {
     private LocalDate dateIssued;
     private String signedBy;
     private String institution;
-    @JsonProperty("memoHash")
     private String memoHashHex;
-    @JsonProperty("txHash")
     private String transactionId;
 
     // Constructors
@@ -98,7 +96,6 @@ public class Certificate {
         this.institution = institution;
     }
 
-    @JsonProperty("memoHash")
     public String getMemoHashHex() {
         return memoHashHex;
     }
@@ -107,7 +104,6 @@ public class Certificate {
         this.memoHashHex = memoHashHex;
     }
 
-    @JsonProperty("txHash")
     public String getTransactionId() {
         return transactionId;
     }
