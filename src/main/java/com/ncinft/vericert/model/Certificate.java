@@ -1,5 +1,6 @@
 package com.ncinft.vericert.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDate;
@@ -16,7 +17,9 @@ public class Certificate {
     private LocalDate dateIssued;
     private String signedBy;
     private String institution;
+    @JsonProperty("memoHash")
     private String memoHashHex;
+    @JsonProperty("txHash")
     private String transactionId;
 
     // Constructors
