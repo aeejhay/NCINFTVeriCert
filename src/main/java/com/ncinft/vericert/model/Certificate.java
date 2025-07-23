@@ -98,6 +98,7 @@ public class Certificate {
         this.institution = institution;
     }
 
+    @JsonProperty("memoHash")
     public String getMemoHashHex() {
         return memoHashHex;
     }
@@ -106,6 +107,7 @@ public class Certificate {
         this.memoHashHex = memoHashHex;
     }
 
+    @JsonProperty("txHash")
     public String getTransactionId() {
         return transactionId;
     }
