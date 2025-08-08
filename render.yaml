@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: vericert-backend
+    env: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /api/certificates/test
+    dockerContext: .
+    envVars:
+      - key: SPRING_DATA_MONGODB_URI
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: PORT
+        value: 8080
+      - key: CORS_ORIGINS
+        sync: false
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+
