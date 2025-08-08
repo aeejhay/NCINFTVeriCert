@@ -1,3 +1,8 @@
+/*
+Student note:
+This controller handles certificate endpoints.
+I tried to keep the API simple and clear for testing and use.
+*/
 package com.ncinft.vericert.controller;
 
 import com.ncinft.vericert.model.Certificate;

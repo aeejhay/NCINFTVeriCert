@@ -1,3 +1,8 @@
+/*
+Student note:
+This layout protects admin pages in a simple way.
+If you’re not logged in, it sends you to the login page.
+*/
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';

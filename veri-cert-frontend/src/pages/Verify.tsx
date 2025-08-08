@@ -1,3 +1,8 @@
+/*
+Student note:
+This page verifies a transaction and shows the certificate.
+I wrote the memo hash steps in a simple way for the browser.
+*/
 import React, { useState } from 'react';
 import { Horizon } from '@stellar/stellar-sdk';
 import { API_ENDPOINTS } from '../config/api';

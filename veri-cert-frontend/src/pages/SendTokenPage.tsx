@@ -1,3 +1,8 @@
+/*
+Student note:
+This page sends NCI tokens and saves the result.
+I added clear errors to help when something goes wrong.
+*/
 import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';

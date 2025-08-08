@@ -1,3 +1,8 @@
+/*
+Student note:
+This repository saves token transactions.
+It can be extended with more queries later when needed.
+*/
 package com.ncinft.vericert.repository;
 
 import com.ncinft.vericert.model.NCITokenTransaction;

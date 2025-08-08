@@ -1,3 +1,8 @@
+/*
+Student note:
+This repository gives simple queries for certificates.
+The method names read like plain english for easy use.
+*/
 package com.ncinft.vericert.repository;
 
 import com.ncinft.vericert.model.Certificate;

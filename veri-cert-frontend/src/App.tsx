@@ -1,3 +1,8 @@
+/*
+Student note:
+This file wires the pages together with routes.
+I tried to make navigation simple and easy to follow.
+*/
 // src/App.tsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';

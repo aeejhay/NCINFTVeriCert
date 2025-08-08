@@ -1,3 +1,8 @@
+/*
+Student note:
+This is a simple test controller to check if email and API work.
+It helped me verify features while learning.
+*/
 package com.ncinft.vericert.controller;
 
 import com.ncinft.vericert.model.Certificate;

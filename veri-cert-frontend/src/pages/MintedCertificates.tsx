@@ -1,3 +1,8 @@
+/*
+Student note:
+This page lists certificates saved in the database.
+I focused on showing key details with simple styles.
+*/
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';

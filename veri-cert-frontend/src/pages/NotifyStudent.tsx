@@ -1,3 +1,8 @@
+/*
+Student note:
+This page helps admin search a student and send an email.
+I used toasts to make feedback clear and friendly.
+*/
 import React, { useState, useEffect } from 'react';
 import { API_ENDPOINTS } from '../config/api';
 import { toast } from 'react-hot-toast';

@@ -1,3 +1,8 @@
+/*
+Student note:
+This page explains what VeriCert is in simple words.
+I wrote it to be friendly for anyone new to blockchain.
+*/
 // About Us Page
 
 import React from 'react';

@@ -1,3 +1,8 @@
+/*
+Student note:
+This service stores token transactions.
+It is small on purpose so it’s easy to test and maintain.
+*/
 package com.ncinft.vericert.service;
 
 import com.ncinft.vericert.model.NCITokenTransaction;

@@ -1,3 +1,8 @@
+/*
+Student note:
+This helper saves certificate data and makes a hash.
+I kept the logic small so it’s easy to follow.
+*/
 package com.ncinft.vericert.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

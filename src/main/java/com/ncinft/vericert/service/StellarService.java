@@ -1,3 +1,8 @@
+/*
+Student note:
+This service holds basic Stellar settings and a simple verifier.
+I plan to improve it as I learn more about the network.
+*/
 package com.ncinft.vericert.service;
 
 import org.springframework.beans.factory.annotation.Value;

@@ -1,3 +1,8 @@
+/*
+Student note:
+This is a simple footer with branding.
+I kept styles minimal so it looks clean.
+*/
 // Footer.tsx
 import React from 'react';
 import logo from '../assets/images/logo/vericertlogo-footer.png';

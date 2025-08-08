@@ -1,3 +1,8 @@
+/*
+Student note:
+This page lets you enter a Stellar public key and see details.
+I used basic checks to keep it simple and safe.
+*/
 // Connect Account or Connect Wallet
 
 import React, { useState } from 'react';

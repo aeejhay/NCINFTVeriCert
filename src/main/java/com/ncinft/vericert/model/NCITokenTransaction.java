@@ -1,3 +1,8 @@
+/*
+Student note:
+This model stores NCI token transactions in MongoDB.
+It uses simple fields so saving and reading is straightforward.
+*/
 package com.ncinft.vericert.model;
 
 import org.springframework.data.annotation.Id;

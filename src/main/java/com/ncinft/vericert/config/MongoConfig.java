@@ -1,3 +1,8 @@
+/*
+Student note:
+I wrote this config after reading docs and examples.
+It connects the app to MongoDB in a simple way.
+*/
 package com.ncinft.vericert.config;
 
 import org.springframework.context.annotation.Configuration;

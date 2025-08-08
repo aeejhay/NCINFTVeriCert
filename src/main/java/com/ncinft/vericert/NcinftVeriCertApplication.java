@@ -1,3 +1,9 @@
+/*
+Student note:
+I'm a student who built this as part of my learning.
+I did my research and kept things simple and easy to read.
+This file is part of the VeriCert app.
+*/
 package com.ncinft.vericert;
 
 import org.springframework.boot.SpringApplication;

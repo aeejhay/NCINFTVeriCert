@@ -1,3 +1,8 @@
+/*
+Student note:
+This file saves token transactions.
+It uses simple HTTP requests so it’s easy to test and debug.
+*/
 package com.ncinft.vericert.controller;
 
 import com.ncinft.vericert.model.NCITokenTransaction;

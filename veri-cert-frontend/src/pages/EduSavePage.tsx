@@ -1,3 +1,8 @@
+/*
+Student note:
+This page breaks down EduSave ideas in simple sections.
+I used FAQs and steps so it’s easy to understand.
+*/
 // EduSave Page - Detailed information about EduSave
 
 import React, { useState } from 'react';

@@ -1,3 +1,8 @@
+/*
+Student note:
+This page checks a simple username and password from env.
+It’s basic on purpose for a small admin area.
+*/
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

@@ -1,3 +1,8 @@
+/*
+Student note:
+This header shows simple links and a wallet button.
+The mobile menu is basic on purpose to keep it easy.
+*/
 // Header.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';

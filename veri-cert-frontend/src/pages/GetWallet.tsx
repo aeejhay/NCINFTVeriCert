@@ -1,3 +1,8 @@
+/*
+Student note:
+This guide shows how to install a wallet step by step.
+I wrote it like a quick checklist for new users.
+*/
 import React from 'react';
 
 const GetWallet: React.FC = () => {

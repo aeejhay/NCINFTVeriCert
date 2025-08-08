@@ -1,3 +1,8 @@
+/*
+Student note:
+This model represents a certificate stored in MongoDB.
+I kept field names clear so data is easy to understand.
+*/
 package com.ncinft.vericert.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

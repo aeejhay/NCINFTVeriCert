@@ -1,3 +1,8 @@
+/*
+Student note:
+This class does the real work for certificates using the database.
+I added prints to help me see what happens during save and search.
+*/
 package com.ncinft.vericert.service;
 
 import com.ncinft.vericert.model.Certificate;

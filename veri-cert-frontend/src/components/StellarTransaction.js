@@ -1,3 +1,8 @@
+/*
+Student note:
+This component was my early test for sending a Stellar payment.
+It’s kept around as a simple example for learning.
+*/
 import React, { useState, useEffect } from 'react';
 import { Networks, TransactionBuilder, Operation, Asset, Keypair, Horizon, Memo } from '@stellar/stellar-sdk';
 

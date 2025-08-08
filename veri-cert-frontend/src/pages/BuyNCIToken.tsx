@@ -1,3 +1,8 @@
+/*
+Student note:
+This page explains $NCI token in plain english.
+I focused on clear steps instead of complex details.
+*/
 // Buy NCI Token Page
 
 import React from 'react';

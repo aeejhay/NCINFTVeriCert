@@ -1,3 +1,8 @@
+/*
+Student note:
+This modal lets admin search students and send a quick email.
+I made the steps small so anyone can follow them.
+*/
 import React, { useState, useEffect } from 'react';
 import { API_ENDPOINTS } from '../config/api';
 

@@ -1,3 +1,8 @@
+/*
+Student note:
+This controller searches students and sends simple email notices.
+I wanted the flow to feel straightforward and friendly.
+*/
 package com.ncinft.vericert.controller;
 
 import com.ncinft.vericert.model.Certificate;

@@ -1,3 +1,8 @@
+/*
+Student note:
+This interface defines simple actions for certificates.
+It helps keep the code organized and clear.
+*/
 package com.ncinft.vericert.service;
 
 import com.ncinft.vericert.model.Certificate;

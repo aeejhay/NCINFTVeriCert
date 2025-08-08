@@ -1,3 +1,8 @@
+/*
+Student note:
+This service sends simple and clear emails about certificates.
+I tried to make the messages friendly and useful.
+*/
 package com.ncinft.vericert.service;
 
 import com.ncinft.vericert.model.Certificate;

@@ -1,3 +1,8 @@
+/*
+Student note:
+This is the homepage with quick links to main features.
+I kept the design clean so it’s easy to navigate.
+*/
 // Home.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';

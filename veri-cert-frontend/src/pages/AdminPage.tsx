@@ -1,3 +1,8 @@
+/*
+Student note:
+This page lets admin mint a certificate and save it.
+I added progress messages to make the process clear.
+*/
 //Admin Page
 
 import React, { useState } from 'react';
